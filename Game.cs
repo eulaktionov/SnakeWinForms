@@ -217,12 +217,8 @@ namespace SnakeWF
                 Left = value.Col * Game.size;
             }
         }
-        public Cell(Color? color = null)
+        public Cell(Color color)
         {
-            if (color is null)
-            {
-                color = Color.Yellow;
-            }
             Width = Game.size;
             Height = Game.size;
             Graphics graphics = CreateGraphics();
