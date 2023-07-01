@@ -170,7 +170,6 @@ namespace SnakeWF
             }
             return false;
         }
-            
     }
 
     internal class Cell : PictureBox
