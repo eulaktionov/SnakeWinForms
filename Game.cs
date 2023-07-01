@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Reflection;
 using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
@@ -40,14 +41,18 @@ namespace SnakeWF
             BackColor = backColor;
             //DrawLines();
 
-            food = CreateFood();
-            Controls.Add(food);
-
             snake = CreateSnake();
-            foreach (var item in snake.Body)
+            foreach(var item in snake.Body)
             {
                 Controls.Add(item);
             }
+
+            food = new ()
+            {
+                BackColor = foodColor
+            };
+            MoveFood();
+            Controls.Add(food);
 
             timer = new()
             {
@@ -77,11 +82,14 @@ namespace SnakeWF
             }
         }
 
-        Cell CreateFood() => new Cell()
+        void MoveFood()
         {
-            Place = RandomPlace,
-            BackColor = foodColor
-        };
+            do
+            {
+                food.Place = RandomPlace;
+            }
+            while(snake.Include(food));
+        }
 
         Snake CreateSnake() => new Snake()
         {
@@ -106,6 +114,21 @@ namespace SnakeWF
                 return;
             }
 
+            if(snakePlace == food.Place)
+            {
+                MoveFood();
+                Cell cell = new()
+                {
+                    BackColor = snakeColor
+                };
+                snake.Body.Add(cell);
+                Controls.Add(cell);
+            }
+
+            for(int i = snake.Body.Count - 1; i > 0; i--) 
+            {
+                snake.Body[i].Place = snake.Body[i - 1].Place;
+            }
             snake.Place = snakePlace;
         }
 
@@ -138,6 +161,16 @@ namespace SnakeWF
             Body = new();
             Body.Add(new Cell());
         }
+        public bool Include(Cell cell)
+        {
+            foreach(var item in Body)
+            {
+                if(item.Place == cell.Place)
+                    return true;
+            }
+            return false;
+        }
+            
     }
 
     internal class Cell : PictureBox
