@@ -13,6 +13,10 @@ namespace SnakeWF
             ClientSize = new Size(game.Width, game.Height);
             StartPosition = FormStartPosition.CenterScreen;
             Load += (s, e) => Start();
+            KeyDown += (s, e) => game.Direction = e.KeyCode switch
+            {
+                Keys.Left or Keys.Up or Keys.Right or Keys.Down => e.KeyCode
+            };
         }
 
         void Start()

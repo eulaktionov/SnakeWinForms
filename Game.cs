@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -15,6 +16,7 @@ namespace SnakeWF
         Color snakeColor = Color.Red;
         Color foodColor = Color.Yellow;
         int penWidth = 3;
+        int interval = 300;
 
         Random random = new Random();
         Place RandomPlace => new()
@@ -23,8 +25,13 @@ namespace SnakeWF
             Row = random.Next(side)
         };
 
+        static bool OutOfRange(int start, int end, int value) =>
+            value < start || value > end;
+
         Snake snake;
         Cell food;
+        public Keys Direction { get; set; } = Keys.Left;
+        System.Windows.Forms.Timer timer;
 
         public Game()
         {
@@ -41,6 +48,13 @@ namespace SnakeWF
             {
                 Controls.Add(item);
             }
+
+            timer = new()
+            {
+                Interval = interval,
+                Enabled = true
+            };
+            timer.Tick += (s,e)=>MoveSnake();
 
             Paint += (s, e) => DrawLines();
         }
@@ -75,7 +89,35 @@ namespace SnakeWF
             Color = snakeColor
         };
 
+        void MoveSnake()
+        {
+            var snakePlace = snake.Place;
+            switch(Direction)
+            {
+                case Keys.Left: snakePlace.Col--; break;
+                case Keys.Up: snakePlace.Row--; break;
+                case Keys.Right: snakePlace.Col++; break;
+                case Keys.Down: snakePlace.Row++; break;
+            }
 
+            if(OutOfGrid(snakePlace))
+            {
+                EndGame();
+                return;
+            }
+
+            snake.Place = snakePlace;
+        }
+
+        bool OutOfGrid(Place place) =>
+            OutOfRange(0, side - 1, place.Col) ||
+            OutOfRange(0, side - 1, place.Row);
+
+        void EndGame()
+        {
+            timer.Stop();
+            MessageBox.Show("You lost!");
+        }
     }
 
     internal class Snake
