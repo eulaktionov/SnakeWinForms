@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 
 namespace SnakeWF
 {
+    delegate void Show(int points);
+    delegate void TurnOn();
+
     internal class Game : Panel
     {
         public static int size = 40;
@@ -34,8 +37,15 @@ namespace SnakeWF
         public Keys Direction { get; set; } = Keys.Left;
         System.Windows.Forms.Timer timer;
 
-        public Game()
+        int points;
+        Show showPoints;
+
+        public event TurnOn TurnOn;
+
+        public Game(Show showPoints)
         {
+            this.showPoints = showPoints;
+
             Size = new Size(size * side + penWidth, 
                 size * side + penWidth);
             BackColor = backColor;
@@ -62,6 +72,14 @@ namespace SnakeWF
             timer.Tick += (s,e)=>MoveSnake();
 
             Paint += (s, e) => DrawLines();
+        }
+
+        public void Restart()
+        {
+            points = 0;
+            RecreateSnake();
+            food.Place = RandomPlace;
+            timer.Start();
         }
 
         void DrawLines()
@@ -97,6 +115,16 @@ namespace SnakeWF
             Color = snakeColor
         };
 
+        void RecreateSnake()
+        {
+            for(int i = snake.Body.Count - 1; i > 0; i--)
+            {
+                Controls.Remove(snake.Body[i]);
+                snake.Body.RemoveAt(i);
+            }
+            snake.Place = RandomPlace;
+        }
+
         void MoveSnake()
         {
             var snakePlace = snake.Place;
@@ -111,6 +139,7 @@ namespace SnakeWF
             if(OutOfGrid(snakePlace))
             {
                 EndGame();
+                TurnOn?.Invoke();
                 return;
             }
 
@@ -123,6 +152,7 @@ namespace SnakeWF
                 };
                 snake.Body.Add(cell);
                 Controls.Add(cell);
+                showPoints(++points);
             }
 
             for(int i = snake.Body.Count - 1; i > 0; i--) 
