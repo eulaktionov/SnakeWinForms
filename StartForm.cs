@@ -7,8 +7,11 @@ namespace SnakeWF
         public StartForm()
         {
             InitializeComponent();
+
             game = new Game();
             Controls.Add(game);
+            ClientSize = new Size(game.Width, game.Height);
+            StartPosition = FormStartPosition.CenterScreen;
             Load += (s, e) => Start();
         }
 
@@ -17,8 +20,6 @@ namespace SnakeWF
             Text = "Snake";
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-            StartPosition = FormStartPosition.CenterScreen;
-            ClientSize = new Size(game.Width, game.Height);
         }
     }
 }
