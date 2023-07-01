@@ -30,12 +30,13 @@
         {
             SuspendLayout();
             // 
-            // Form1
+            // StartForm
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.FromArgb(255, 255, 128);
             ClientSize = new Size(800, 450);
-            Name = "Form1";
+            Name = "StartForm";
             Text = "Form1";
             ResumeLayout(false);
         }

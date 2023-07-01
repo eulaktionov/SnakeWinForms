@@ -217,10 +217,17 @@ namespace SnakeWF
                 Left = value.Col * Game.size;
             }
         }
-        public Cell()
+        public Cell(Color? color = null)
         {
+            if (color is null)
+            {
+                color = Color.Yellow;
+            }
             Width = Game.size;
             Height = Game.size;
+            Graphics graphics = CreateGraphics();
+            graphics.FillEllipse(new SolidBrush((Color)color),
+                0,0,Game.size,Game.size);
         }
     }
 

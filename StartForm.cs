@@ -27,7 +27,7 @@ namespace SnakeWF
 
         void SetDirection(Keys key)
         {
-            if (key == Keys.Left ||
+            if(key == Keys.Left ||
                 key == Keys.Up ||
                 key == Keys.Right ||
                 key == Keys.Down)
