@@ -16,7 +16,10 @@ namespace SnakeWF
             panel = CreatePanel();
             Controls.Add(panel);
 
-            game = new Game(ShowPoints);
+            game = new Game(ShowPoints)
+            {
+                Top = panelHeight,
+            };
             game.TurnOn += () => button.Enabled = true;
             Controls.Add(game);
             ClientSize = new Size(game.Width, panel.Height + game.Height);
@@ -97,19 +100,3 @@ namespace SnakeWF
         }
     }
 }
-/*
-switch(key)
-{
-case 1:
-    item = 1;
-    break;
-case 1:
-    item = 1;
-    break;
-}
-
-item = switch(key)
-{
-1=>key, 2=> key, _item
-}
-*/

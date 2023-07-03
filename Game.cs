@@ -4,8 +4,11 @@ using System.Drawing;
 using System.Linq;
 using System.Reflection;
 using System.Security.Cryptography.Xml;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+
+using static SnakeWF.Properties.Resources;
 
 namespace SnakeWF
 {
@@ -15,10 +18,11 @@ namespace SnakeWF
     internal class Game : Panel
     {
         public static int size = 40;
+        int shift = 3;
         int side = 20;
         Color backColor = Color.Lime;
-        Color snakeColor = Color.Red;
-        Color foodColor = Color.Yellow;
+        //Color snakeColor = Color.Red;
+        //Color foodColor = Color.Yellow;
         int penWidth = 3;
         int interval = 300;
 
@@ -49,9 +53,12 @@ namespace SnakeWF
             Size = new Size(size * side + penWidth, 
                 size * side + penWidth);
             BackColor = backColor;
-            //DrawLines();
 
-            snake = CreateSnake();
+            Cell cell = CreateSnakeCell();
+            snake = new(cell)
+            {
+                Place = RandomPlace
+            };
             foreach(var item in snake.Body)
             {
                 Controls.Add(item);
@@ -59,7 +66,7 @@ namespace SnakeWF
 
             food = new ()
             {
-                BackColor = foodColor
+                Image = food01
             };
             MoveFood();
             Controls.Add(food);
@@ -78,7 +85,6 @@ namespace SnakeWF
         {
             points = 0;
             RecreateSnake();
-            food.Place = RandomPlace;
             timer.Start();
         }
 
@@ -104,16 +110,29 @@ namespace SnakeWF
         {
             do
             {
+                food.Height = size - shift * 2;
+                food.Width = size - shift * 2;
                 food.Place = RandomPlace;
+                food.Top += shift;
+                food.Left += shift;
             }
             while(snake.Include(food));
         }
 
-        Snake CreateSnake() => new Snake()
+        Cell CreateSnakeCell()
         {
-            Place = RandomPlace,
-            Color = snakeColor
-        };
+            Cell cell = new()
+            {
+                Height = size,
+                Width = size
+            };
+
+            using(var stream = new MemoryStream(snake01))
+            {
+                cell.Image = Image.FromStream(stream);
+            }
+            return cell;
+        }
 
         void RecreateSnake()
         {
@@ -122,6 +141,7 @@ namespace SnakeWF
                 Controls.Remove(snake.Body[i]);
                 snake.Body.RemoveAt(i);
             }
+            MoveFood();
             snake.Place = RandomPlace;
         }
 
@@ -146,10 +166,8 @@ namespace SnakeWF
             if(snakePlace == food.Place)
             {
                 MoveFood();
-                Cell cell = new()
-                {
-                    BackColor = snakeColor
-                };
+                Cell cell = CreateSnakeCell();
+
                 snake.Body.Add(cell);
                 Controls.Add(cell);
                 showPoints(++points);
@@ -186,10 +204,19 @@ namespace SnakeWF
             get => Body[0].BackColor;
             set => Body[0].BackColor = value;
         }
-        public Snake()
+        public Snake(Cell header)
         {
             Body = new();
-            Body.Add(new Cell());
+            //Cell cell = new ()
+            //{
+            //    Height = Game.size,
+            //    Width = Game.size
+            //};
+            //using(var stream = new MemoryStream(snake01))
+            //{
+            //    cell.Image = Image.FromStream(stream);
+            //}
+            Body.Add(header);
         }
         public bool Include(Cell cell)
         {
@@ -217,13 +244,9 @@ namespace SnakeWF
                 Left = value.Col * Game.size;
             }
         }
-        public Cell(Color color)
+        public Cell()
         {
-            Width = Game.size;
-            Height = Game.size;
-            Graphics graphics = CreateGraphics();
-            graphics.FillEllipse(new SolidBrush((Color)color),
-                0,0,Game.size,Game.size);
+            SizeMode = PictureBoxSizeMode.StretchImage;
         }
     }
 
