@@ -21,8 +21,6 @@ namespace SnakeWF
         int shift = 3;
         int side = 20;
         Color backColor = Color.Lime;
-        //Color snakeColor = Color.Red;
-        //Color foodColor = Color.Yellow;
         int penWidth = 3;
         int interval = 300;
 
@@ -207,15 +205,6 @@ namespace SnakeWF
         public Snake(Cell header)
         {
             Body = new();
-            //Cell cell = new ()
-            //{
-            //    Height = Game.size,
-            //    Width = Game.size
-            //};
-            //using(var stream = new MemoryStream(snake01))
-            //{
-            //    cell.Image = Image.FromStream(stream);
-            //}
             Body.Add(header);
         }
         public bool Include(Cell cell)
